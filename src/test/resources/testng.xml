@@ -1,0 +1,16 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+<suite name="Test-Suite-MizuUITestCases">
+
+    <test name="MizuCaseFirefox">
+        <parameter name="browser" value="chrome"/>
+        <classes>
+            <class name="testCases.loginPageTestCases.LoginPageTestCases"/>
+        </classes>
+    </test>
+    <test name="MizuCaseFirefox">
+        <parameter name="browser" value="firefox"/>
+        <classes>
+            <class name="testCases.loginPageTestCases.LoginPageTestCases"/>
+        </classes>
+    </test>
+</suite>
