@@ -5,9 +5,15 @@ import helpers.ActionClass;
 import helpers.Listeners;
 import org.testng.Assert;
 import org.testng.annotations.*;
-import pages.LoginPage;
+import pages.loginPages.LoginPage;
 import pages.MainPage;
+import pages.loginPages.facebookLoginPage.FacebookLoginPage;
+import pages.loginPages.googlePages.GoogleUserNamePage;
+import pages.loginPages.googlePages.GoogleUserPasswordPage;
 import pages.popUp.PopUpLoginPage;
+
+import java.util.Iterator;
+import java.util.Set;
 
 import static base.Constants.*;
 
@@ -16,6 +22,9 @@ public class LoginPageTestCases extends BaseClass {
     MainPage mainPage;
     LoginPage loginPage;
     PopUpLoginPage popUpLoginPage;
+    GoogleUserNamePage googleUserNamePage;
+    GoogleUserPasswordPage googleUserPasswordPage;
+    FacebookLoginPage facebookLoginPage;
 
     @BeforeClass
     @Parameters({"browser"})
@@ -24,6 +33,9 @@ public class LoginPageTestCases extends BaseClass {
         mainPage = new MainPage(driver);
         popUpLoginPage = new PopUpLoginPage(driver);
         loginPage = new LoginPage(driver);
+        googleUserNamePage = new GoogleUserNamePage(driver);
+        googleUserPasswordPage = new GoogleUserPasswordPage(driver);
+        facebookLoginPage = new FacebookLoginPage(driver);
     }
 
     @AfterClass
@@ -44,7 +56,7 @@ public class LoginPageTestCases extends BaseClass {
         mainPage.logOut();
         Assert.assertEquals(actual, excepted, "Login failed..!");
     }
-/*
+
     @Test(dataProvider = "SearchProvider", dataProviderClass = helpers.DataProvider.class)
     public void failedLoginWithInvalidUserPasswordAndValidUserName(String author, String searchKey) {
         System.out.println(author);
@@ -81,5 +93,42 @@ public class LoginPageTestCases extends BaseClass {
         Assert.assertEquals(actual, excepted, "Login should have failed but ended successfully..!");
     }
 
- */
+    @Test(dataProvider = "SearchProvider", dataProviderClass = helpers.DataProvider.class)
+    public void googleLoginAreaWithSuccess(String author, String searchKey) {
+        System.out.println(author);
+        driver.get(baseUrl + searchKey + "/login");
+        loginPage.getGoogleLoginButton().click();
+        googleUserNamePage.enterUserNameAndGoNextPage(GOOGLE_USER_NAME);
+        googleUserPasswordPage.enterUserPasswordAndGoNextPage(GOOGLE_USER_PASSWORD);
+        //region Excepted and Actual
+        String excepted = "My Account";
+        String actual = mainPage.getAccountArea().getText();
+        //endregion
+        Assert.assertEquals(actual, excepted, "Login failed with (" + GOOGLE_USER_NAME + ") Google Account");
+    }
+
+    @Test
+    public void facebookLoginAreaWithSuccess() {
+        driver.get(baseUrl + "login");
+        loginPage.getFacebookLoginButton().click();
+        String parentWindow = driver.getWindowHandle();
+        Set<String> s = driver.getWindowHandles();
+        Iterator<String> iterator = s.iterator();
+        while (iterator.hasNext()) {
+            String childWindow=iterator.next();
+            if(!parentWindow.equals(childWindow)){
+                driver.switchTo().window(childWindow);
+                facebookLoginPage.loginFacebook(FACEBOOK_USER_NAME, FACEBOOK_USER_PASSWORD);
+                driver.close();
+            }
+        }
+        driver.switchTo().window(parentWindow);
+        //region Excepted and Actual
+        String excepted = "My Account";
+        String actual = mainPage.getAccountArea().getText();
+        //endregion
+        Assert.assertEquals(actual, excepted, "Login failed with (" + FACEBOOK_USER_NAME + ") Facebook Account");
+    }
+
+
 }

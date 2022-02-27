@@ -15,11 +15,9 @@ public class MainPage extends BasePages {
         this.driver = driver;
     }
 
-    @FindBy(xpath = "//div[@class='header__top js-window-menu']//a[@href='javascript:void(0);']")
-    private WebElement signInArea;
     @FindBy(xpath = "//div[@class='header__top js-window-menu']//a[@title='My Account']/span[@class='user-menu__title']")
     private WebElement accountArea;
-    @FindBy(xpath = "//div[@class='header']//a[@title='Log Out']")
+    @FindBy(css = "div.header a[title='Log Out']")
     private WebElement logOutButton;
 
 
@@ -33,14 +31,9 @@ public class MainPage extends BasePages {
         return logOutButton;
     }
 
-    public WebElement getSignInArea(){
-        CustomElementWaits.waitUntilElementToClickable(driver,signInArea);
-        return signInArea;
-    }
-
     public void logOut() {
-        ActionClass.moveTo(driver, getAccountArea());
-        ActionClass.moveTo(driver, getLogOutButton());
+        ActionClass.moveToMouseOnElement(driver, getAccountArea());
+        ActionClass.moveToMouseOnElement(driver, getLogOutButton());
         ActionClass.performClick(driver);
     }
 }
