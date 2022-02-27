@@ -12,7 +12,6 @@ import pages.loginPages.googlePages.GoogleUserNamePage;
 import pages.loginPages.googlePages.GoogleUserPasswordPage;
 import pages.popUp.PopUpLoginPage;
 
-import java.util.Iterator;
 import java.util.Set;
 
 import static base.Constants.*;
@@ -43,7 +42,7 @@ public class LoginPageTestCases extends BaseClass {
         super.afterMethod();
     }
 
-    @Test(dataProvider = "SearchProvider", dataProviderClass = helpers.DataProvider.class)
+    @Test(dataProvider = "SearchProvider", dataProviderClass = helpers.DataProvider.class, retryAnalyzer = retry.RetryAnalyzer.class)
     public void successfulLogin(String author, String searchKey) {
         System.out.println(author);
         driver.get(baseUrl + searchKey + "/login");
@@ -57,7 +56,7 @@ public class LoginPageTestCases extends BaseClass {
         Assert.assertEquals(actual, excepted, "Login failed..!");
     }
 
-    @Test(dataProvider = "SearchProvider", dataProviderClass = helpers.DataProvider.class)
+    @Test(dataProvider = "SearchProvider", dataProviderClass = helpers.DataProvider.class, retryAnalyzer = retry.RetryAnalyzer.class)
     public void failedLoginWithInvalidUserPasswordAndValidUserName(String author, String searchKey) {
         System.out.println(author);
         driver.get(baseUrl + searchKey + "/login");
@@ -69,7 +68,7 @@ public class LoginPageTestCases extends BaseClass {
         Assert.assertEquals(actual, excepted, "Login should have failed but ended successfully..!");
     }
 
-    @Test(dataProvider = "SearchProvider", dataProviderClass = helpers.DataProvider.class)
+    @Test(dataProvider = "SearchProvider", dataProviderClass = helpers.DataProvider.class, retryAnalyzer = retry.RetryAnalyzer.class)
     public void failedLoginWithInvalidUserNameAndValidUserPassword(String author, String searchKey) {
         System.out.println(author);
         driver.get(baseUrl + searchKey + "/login");
@@ -81,7 +80,7 @@ public class LoginPageTestCases extends BaseClass {
         Assert.assertEquals(actual, excepted, "Login should have failed but ended successfully..!");
     }
 
-    @Test(dataProvider = "SearchProvider", dataProviderClass = helpers.DataProvider.class)
+    @Test(dataProvider = "SearchProvider", dataProviderClass = helpers.DataProvider.class, retryAnalyzer = retry.RetryAnalyzer.class)
     public void failedLoginWithInvalidUserNameAndInvalidUserPassword(String author, String searchKey) {
         System.out.println(author);
         driver.get(baseUrl + searchKey + "/login");
@@ -93,7 +92,7 @@ public class LoginPageTestCases extends BaseClass {
         Assert.assertEquals(actual, excepted, "Login should have failed but ended successfully..!");
     }
 
-    @Test(dataProvider = "SearchProvider", dataProviderClass = helpers.DataProvider.class)
+    @Test(dataProvider = "SearchProvider", dataProviderClass = helpers.DataProvider.class, retryAnalyzer = retry.RetryAnalyzer.class)
     public void googleLoginAreaWithSuccess(String author, String searchKey) {
         System.out.println(author);
         driver.get(baseUrl + searchKey + "/login");
@@ -107,16 +106,15 @@ public class LoginPageTestCases extends BaseClass {
         Assert.assertEquals(actual, excepted, "Login failed with (" + GOOGLE_USER_NAME + ") Google Account");
     }
 
-    @Test
-    public void facebookLoginAreaWithSuccess() {
-        driver.get(baseUrl + "login");
+    @Test(dataProvider = "SearchProvider", dataProviderClass = helpers.DataProvider.class, retryAnalyzer = retry.RetryAnalyzer.class)
+    public void facebookLoginAreaWithSuccess(String author, String searchKey) {
+        System.out.println(author);
+        driver.get(baseUrl + searchKey + "/login");
         loginPage.getFacebookLoginButton().click();
         String parentWindow = driver.getWindowHandle();
         Set<String> s = driver.getWindowHandles();
-        Iterator<String> iterator = s.iterator();
-        while (iterator.hasNext()) {
-            String childWindow=iterator.next();
-            if(!parentWindow.equals(childWindow)){
+        for (String childWindow : s) {
+            if (!parentWindow.equals(childWindow)) {
                 driver.switchTo().window(childWindow);
                 facebookLoginPage.loginFacebook(FACEBOOK_USER_NAME, FACEBOOK_USER_PASSWORD);
                 driver.close();
